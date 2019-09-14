@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class Send {
     private static final String TEMPLATE_ID="cKU4fUyfpmYD34Elv57TeQXkbC54ni1LEqvE3ah3mSA";
+    private static final String TEMPLATE_ID2="YG3TNozUx_CcFio6076L36FRLZVgjgxzNg0P7NeY8QE";
     public static void main(String[] args) {
         //推送实体类
         wxsmallTemplate tem=new wxsmallTemplate();
@@ -70,6 +71,44 @@ public class Send {
 
 
         paras.add(new wxsmallTemplateParam("keyword2",CommonUtils.buildTime()));
+
+        tem.setTemplateParamList(paras);
+
+        //获取token的凭证
+        Token token=CommonUtils.getToken();
+
+        String accessToken=token.getAccessToken();
+
+        boolean result=CommonUtils.sendTemplateMsg(accessToken,tem);
+
+        if (result) {
+            System.err.println("推送成功");
+        } else {
+            System.err.println("推送失败");
+        }
+
+    }
+
+    public static void sendTemplate2(String openId,String formId,String textInput){
+        wxsmallTemplate tem=new wxsmallTemplate();
+        //设置模板id
+        tem.setTemplateId(TEMPLATE_ID2);
+
+        tem.setToUser(openId);
+
+        tem.setForm_id(formId);
+
+        //点开模板路由的地址
+        tem.setPage("pages/service/service1");
+
+        List<wxsmallTemplateParam> paras=new ArrayList<>();
+        paras.add(new wxsmallTemplateParam("keyword1","同意","#DC143C"));
+
+
+        paras.add(new wxsmallTemplateParam("keyword2",CommonUtils.buildTime()));
+
+        paras.add(new wxsmallTemplateParam("keyword3",textInput));
+
 
         tem.setTemplateParamList(paras);
 

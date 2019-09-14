@@ -98,8 +98,35 @@ public class FileIdServiceImpl implements FileIdService {
         return fileIdMap;
     }
 
-    public void saveFileName(){
-       // mongoTemplate.insert()
+    @Override
+    public void delete(String realFileName) {
+        Query query=new Query();
+        query.addCriteria(Criteria.where("realFileName").is(realFileName));
+        mongoTemplate.remove(query,FileIdMap.class);
+    }
+
+    @Override
+    public FileIdMap findByRealFileNameAndOpenId(String realFileName, String openId) {
+        Query query=new Query();
+        query.addCriteria(Criteria.where("realFileName").is(realFileName)
+                .and("openId").is(openId));
+        return  mongoTemplate.findOne(query,FileIdMap.class);
+    }
+
+    @Override
+    public void clearUserRequest(String realFileName,String openId) {
+        Query query=new Query();
+        query.addCriteria(Criteria.where("realFileName").is(realFileName)
+                .and("openId").is(openId));
+
+        FileIdMap fileIdMap=mongoTemplate.findOne(query,FileIdMap.class);
+
+        List<UserRequest> list=new ArrayList<>();
+        fileIdMap.setUserRequestList(list);
+        mongoTemplate.remove(query,FileIdMap.class);
+        mongoTemplate.save(fileIdMap);
+
+
     }
 }
 

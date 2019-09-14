@@ -16,6 +16,8 @@ public interface UserInfoRepository extends JpaRepository<UserInfo,String> {
 
     UserInfo findByUserName(String userName);
 
+    UserInfo findByOpenIdAndAndCreateTime(String openId,String createTime);
+
 
 
 }

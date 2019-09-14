@@ -1,6 +1,7 @@
 package com.gh.filemanagement.Service.Impl;
 
 import com.gh.filemanagement.DAO.FileIdMap;
+import com.gh.filemanagement.DAO.MessageInfo;
 import com.gh.filemanagement.DAO.UserRequest;
 import com.gh.filemanagement.DAO.UserSupervision;
 import com.gh.filemanagement.SendTemplate.CommonUtils;
@@ -38,7 +39,7 @@ public class SupervisionServiceImpl implements SupervisionService {
     }
 
     @Override
-    public void register(String filename, String username,String formId,String fileId) {
+    public void register(String filename, String username,String formId,String fileId,String openId) {
         //先找到符合条件的fieldMap
         System.out.println("rf:"+filename);
         System.out.println("fileId:"+fileId);
@@ -48,6 +49,7 @@ public class SupervisionServiceImpl implements SupervisionService {
         //UserSupervision userSupervision=fileIdMap.getUserSupervision();
         //然后处理userRequest的逻辑,生成request
         UserRequest userRequest=new UserRequest();
+        userRequest.setOpenId(openId);
         userRequest.setUserName(username);
         userRequest.setFormId(formId);
         userRequest.setRequestTime(CommonUtils.buildTime());
@@ -101,5 +103,34 @@ public class SupervisionServiceImpl implements SupervisionService {
         query.addCriteria(Criteria.where("realFileName").is(filename).and("openId").is(openId));
         FileIdMap fileIdMap=mongoTemplate.findOne(query,FileIdMap.class);
         return fileIdMap.getUserRequestList();
+    }
+
+    @Override
+    public List<UserRequest> findRequestListByTextInputAndOpenId(String textInput, String openId) {
+        Query query=new Query();
+        query.addCriteria(Criteria.where("textInput").is(textInput).and("openId").is(openId));
+        MessageInfo messageInfo=mongoTemplate.findOne(query,MessageInfo.class);
+
+        return messageInfo.getUserRequestList();
+    }
+
+    @Override
+    public String
+    findFormIdByTextInputAndTokenAndUserNameAndUserName(String openId,String timestamp,String username) {
+        String res="";
+        Query query=new Query();
+        query.addCriteria(Criteria.where("timestamp").is(timestamp)
+               .and("openId").is(openId));
+
+        MessageInfo messageInfo=mongoTemplate.findOne(query,MessageInfo.class);
+
+        List<UserRequest> list=messageInfo.getUserRequestList();
+        for (UserRequest userRequest : list) {
+            if (userRequest.getUserName().equals(username)){
+                res=userRequest.getFormId();
+            }
+        }
+        return res;
+
     }
 }

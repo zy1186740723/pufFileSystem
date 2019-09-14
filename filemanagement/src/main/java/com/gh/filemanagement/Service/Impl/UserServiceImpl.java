@@ -18,7 +18,26 @@ public class UserServiceImpl implements UserService {
     private UserInfoRepository userInfoRepository;
 
     public void  save(UserInfo userInfo){
-        userInfoRepository.save(userInfo);
+
+        String openId=userInfo.getOpenId();
+        String userName=userInfo.getUserName();
+
+
+        if (findOpenIdByUserName(userName)!=null){
+            //找出现在有用户的openId
+            String opnIdInSql=findOpenIdByUserName(userName);
+            UserInfo userInfoInSql=findUserInfoByOpenId(opnIdInSql);
+            if (opnIdInSql.equals(openId) ){
+                userInfoRepository.delete(userInfoInSql);
+                userInfoRepository.save(userInfo);
+            }
+            else {
+                userInfo.setUserName(userName+"#");
+                userInfoRepository.save(userInfo);
+            }
+        }
+        else {userInfoRepository.save(userInfo);}
+
     }
 
     @Override
@@ -41,7 +60,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String findOpenIdByUserName(String userName) {
+        if (userInfoRepository.findByUserName(userName)==null){
+            return null;
+        }
+        else {
+            return userInfoRepository.findByUserName(userName).getOpenId();
+        }
 
-        return userInfoRepository.findByUserName(userName).getOpenId();
+    }
+
+    @Override
+    public String findOpenIdByUserNameAndCreateTime(String openId, String createTime) {
+        return userInfoRepository.findByOpenIdAndAndCreateTime(openId,createTime).getOpenId();
     }
 }

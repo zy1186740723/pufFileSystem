@@ -20,4 +20,9 @@ public interface FileIdService {
     String findFileNameByrealFileName(String realFileName);
 
     String findIdByFileName(String fileName);
+
+    void delete(String realFileName);
+
+    FileIdMap findByRealFileNameAndOpenId(String realFileName,String openId);
+    void clearUserRequest(String realFileName,String openId);
 }

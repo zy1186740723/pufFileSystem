@@ -2,6 +2,7 @@ package com.gh.filemanagement.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gh.filemanagement.DAO.FileInfo;
+import com.gh.filemanagement.DAO.MessageInfo;
 import com.gh.filemanagement.DAO.UserInfo;
 import com.gh.filemanagement.Service.Impl.FileIdServiceImpl;
 import com.gh.filemanagement.Service.Impl.SupervisionServiceImpl;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -60,6 +62,8 @@ public class ControllerTest {
 
     @Autowired
     private SupervisionServiceImpl supervisionService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     /**
      *
@@ -78,6 +82,19 @@ public class ControllerTest {
 
         //构成列表返回
         return fileInfoList;
+    }
+
+    //查询text列表
+    @RequestMapping(value = "/findTextList")
+    public List findTextList(@RequestParam(name = "Cookie")String token){
+        String openId=userService.findOpenIdByUserKey(token);
+
+        Query query=new Query();
+        query.addCriteria(Criteria.where("openId").is(openId));
+        List<MessageInfo> list=mongoTemplate.find(query,MessageInfo.class);
+
+        return list;
+
     }
 
     @RequestMapping(value = "/downloadFile2")
@@ -108,6 +125,7 @@ public class ControllerTest {
             //InputStream downLoadStream= GridFSBuckets.create(mongoDbFactory.getDb()).openDownloadStream()
 
 
+            //文件下载
             GridFsResource gridFsResource=new GridFsResource(gfsfile,GridFSBuckets.create(mongoDbFactory.getDb()).openDownloadStream(gfsfile.getObjectId()));
 
 
@@ -131,6 +149,7 @@ public class ControllerTest {
             //通知浏览器进行文件下载
             //response.setContentType(gfsfile.getContentType());
             response.setHeader("Content-Disposition", "attachment;filename=\"" + realFileName + "\"");
+            //TODO;解密操作
             IOUtils.copy(gridFsResource.getInputStream(),response.getOutputStream());
 //        byte[] bs=new byte[1024];
 //        while(inputStream.read(bs)>0){

@@ -15,4 +15,7 @@ public class UserRequest {
 
     private String requestTime;
 
+    //用于防止用户重名的问题
+    private String openId;
+
 }

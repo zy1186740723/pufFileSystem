@@ -18,4 +18,6 @@ public interface UserService {
     String findSessionKeyByToken(String cookie);
 
     String findOpenIdByUserName(String userName);
+
+    String findOpenIdByUserNameAndCreateTime(String openId,String createTime);
 }

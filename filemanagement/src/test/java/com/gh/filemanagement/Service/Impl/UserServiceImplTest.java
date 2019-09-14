@@ -59,4 +59,19 @@ public class UserServiceImplTest {
 
         Assert.assertEquals("o4JE448JvlDDuJh7X_KAZjzxTGl8",service.findOpenIdByUserName(userName));
     }
+
+    @Test
+    public void saveTest(){
+        UserInfo userInfo=new UserInfo();
+        userInfo.setCreateTime(new Date());
+        userInfo.setOpenId("1233");
+        userInfo.setUpdateTime(new Date());
+        userInfo.setSessionKey("1ffdd3");
+        userInfo.setUserAddress("ddd");
+        userInfo.setUserAvatar("dfdfv");
+        userInfo.setUserGender("nan");
+        userInfo.setUserKey("234444355f");
+        userInfo.setUserName("jhha");
+        service.save(userInfo);
+    }
 }
